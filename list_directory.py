@@ -1,14 +1,22 @@
 import argparse
-from os import listdir, curdir
+from os import listdir, curdir, scandir
 parser = argparse.ArgumentParser(description = "create text file with contents of directory")
-parser.add_argument('directory', type=str, nargs = "?", help='file location relative to current directory', default = curdir)
+
+parser.add_argument('directory', type=str, nargs = "?", help='file location relative to home directory', default = curdir)
+
+parser.add_argument('home', type=str, nargs = "?", help='lists paths relative to this directory', default = "")
 
 args = parser.parse_args()
 
 directory = args.directory
-contents = listdir(directory)
-prefix = f"{directory}\\"
+home = args.home
+#contents = listdir(home + directory)
+prefix = f"{directory}/"
+
 with open("contents.txt", 'w') as file:
-    file.write(prefix + f"\n{directory}\\".join(contents))
-    
-print(prefix + f"\n{directory}\\".join(contents))
+    for path in scandir(home + directory):
+        filename = path.name
+        #maybe change this in the future to check for other extensions
+        if filename.partition(".")[-1] == "jpg":
+            file.write(prefix + filename + "\n")
+
